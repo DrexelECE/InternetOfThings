@@ -80,7 +80,7 @@ void loop() {
   
   if (success) {
     if (input='1') {
-      input = '0';
+      input = '2';
     } else {
       input = '1';
     }
