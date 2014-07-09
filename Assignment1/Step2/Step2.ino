@@ -12,13 +12,15 @@
 #define IRQ   (2)
 #define RESET (3)  // Not connected by default on the NFC Shield
 
+#define DEBUGBLINK
+
 Adafruit_NFCShield_I2C nfc(IRQ, RESET);
 
 
 int led = 13;  // LED Pin 
 char input = '0';
 
-int lastBlink = 0;
+unsigned long lastBlink = 0;
 int ledState = LOW;
 
 void setup() {
@@ -47,20 +49,8 @@ void setup() {
   Serial.println("Init complete.");
 }
 
-void blink1() {
-  if (lastBlink + 600 < millis()) {
-    if (ledState==LOW) {
-      ledState = HIGH;
-    } else {
-      ledState = LOW;
-    }
-    lastBlink = millis();
-  }
-  digitalWrite(led, ledState);
-}
-
-void blink2() {
-  if (lastBlink + 100 < millis()) {
+void blink(int time) {
+  if (lastBlink < millis()-time) {
     if (ledState==LOW) {
       ledState = HIGH;
     } else {
@@ -91,6 +81,8 @@ void loop() {
   success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
   //success = nfc.waitUntilReady(10);
   
+  //DEBUG blinks  Serial.println((String)ledState + "\t" + (String) input + "\t" + (String) millis());
+  
   if (success) {
     Serial.println("Found an ISO14443A card");
     Serial.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
@@ -109,10 +101,10 @@ void loop() {
   }
   
   if (input == '1') {
-    blink1();
+    blink(100);
   }
   else if (input == '2') {
-    blink2();
+    blink(500);
   }
  
 }
