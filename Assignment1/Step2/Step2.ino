@@ -12,8 +12,6 @@
 #define IRQ   (2)
 #define RESET (3)  // Not connected by default on the NFC Shield
 
-#define DEBUGBLINK
-
 Adafruit_NFCShield_I2C nfc(IRQ, RESET);
 
 
@@ -49,6 +47,7 @@ void setup() {
   Serial.println("Init complete.");
 }
 
+/* the blinking function */
 void blink(int time) {
   if (lastBlink < millis()-time) {
     if (ledState==LOW) {
@@ -67,6 +66,9 @@ void loop() {
   uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
   uint8_t uidLength;                        // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
   
+  uint8_t card1[] = { 61, 137, 141, 154};
+  uint8_t card2[] = { 180, 96, 190, 85};
+  
   if (Serial.available() > 0) {
     input = Serial.read();
     Serial.println(input);
@@ -84,26 +86,68 @@ void loop() {
   //DEBUG blinks  Serial.println((String)ledState + "\t" + (String) input + "\t" + (String) millis());
   
   if (success) {
-    Serial.println("Found an ISO14443A card");
-    Serial.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
-    Serial.print("  UID Value: ");
-    nfc.PrintHex(uid, uidLength);
-    Serial.println("");
+    Serial.println("  Found a card...");
+    //Serial.println("Found an ISO14443A card");
+    //Serial.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
+    //Serial.println("  UID Value: ");
+    //nfc.PrintHex(uid, uidLength);
+    
+    boolean match1 = true;
+    boolean match2 = false;
+    
+    if (uidLength != sizeof(card1)) {
+      match1 = false;
+    } else {
+      for (int i=0; i<uidLength; i++) {
+        if (uid[i] != card1[i]) {
+        //  Serial.println(uid[i]);
+          match1 = false;
+          break;
+        }
+      }
+    }
+    
+    
+    if (!match1) {
+      match2 = true;
+      if (uidLength != sizeof(card2)) {
+        match2 = false;
+      } else {
+        for (int i=0; i<uidLength; i++) {
+          if (uid[i] != card2[i]) {
+            match2 = false;
+            break;
+          }
+        }
+      }
+    }
+    
+    if (match1) {
+      Serial.println("oh look. Greg's card!");
+      if (input == '1') {
+        input = '2';
+      } else {
+        input = '1';
+      }
+    } else if (match2) {
+      Serial.println("oh look. James's card!");
+      if (input == '1') {
+        input = '2';
+      } else {
+        input = '1';
+      }
+    } else {
+      Serial.println("Access Denied.  No LEDs for you.");
+      input = '0';
+    }
     
     delay(1000);
     
-    
-    if (input=='1') {
-      input = '2';
-    } else {
-      input = '1';
-    }
   }
   
   if (input == '1') {
     blink(100);
-  }
-  else if (input == '2') {
+  }else if (input == '2') {
     blink(500);
   }
  
