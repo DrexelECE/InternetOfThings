@@ -15,7 +15,7 @@
 Adafruit_NFCShield_I2C nfc(IRQ, RESET);
 
 
-
+int lastBlink
 
 int led = 13;  // LED Pin 
 char input = '0';
@@ -40,6 +40,7 @@ void setup() {
   Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC); 
   Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
   
+  nfc.setPassiveActivationRetries(1);
   nfc.SAMConfig();   // configure board to read RFID tags
   
   Serial.println("Init complete.");
@@ -77,9 +78,19 @@ void loop() {
   // 'uid' will be populated with the UID, and uidLength will indicate
   // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
   success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
+  //success = nfc.waitUntilReady(10);
   
   if (success) {
-    if (input='1') {
+    Serial.println("Found an ISO14443A card");
+    Serial.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
+    Serial.print("  UID Value: ");
+    nfc.PrintHex(uid, uidLength);
+    Serial.println("");
+    
+    wait(100);
+    
+    
+    if (input=='1') {
       input = '2';
     } else {
       input = '1';
