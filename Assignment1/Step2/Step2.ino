@@ -15,10 +15,11 @@
 Adafruit_NFCShield_I2C nfc(IRQ, RESET);
 
 
-int lastBlink
-
 int led = 13;  // LED Pin 
 char input = '0';
+
+int lastBlink = 0;
+int ledState = LOW;
 
 void setup() {
   
@@ -47,17 +48,27 @@ void setup() {
 }
 
 void blink1() {
-  digitalWrite(led, HIGH);
-  delay(800);
-  digitalWrite(led, LOW);
-  delay(400);
+  if (lastBlink + 600 < millis()) {
+    if (ledState==LOW) {
+      ledState = HIGH;
+    } else {
+      ledState = LOW;
+    }
+    lastBlink = millis();
+  }
+  digitalWrite(led, ledState);
 }
 
 void blink2() {
-  digitalWrite(led, HIGH);
-  delay(100);
-  digitalWrite(led, LOW);
-  delay(100);
+  if (lastBlink + 100 < millis()) {
+    if (ledState==LOW) {
+      ledState = HIGH;
+    } else {
+      ledState = LOW;
+    }
+    lastBlink = millis();
+  }
+  digitalWrite(led, ledState);
 }
 
 void loop() {
@@ -87,7 +98,7 @@ void loop() {
     nfc.PrintHex(uid, uidLength);
     Serial.println("");
     
-    wait(100);
+    delay(1000);
     
     
     if (input=='1') {
