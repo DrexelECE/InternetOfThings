@@ -12,7 +12,7 @@ char lightSetting = input;
 
 void setup() {
   pinMode(led, OUTPUT);  // initialize the digital pin as an output.
-  XBee.begin(9600);  // start serial port at 9600 bps, 115200 is too high a baud rate, causes garbled text
+  XBee.begin(115200);  // 115200 causes garbled text, switch to 9600 if desired
   XBee.println("Enter the blink sequence number, 1 or 2. To turn off, enter 0.");
 }
 
@@ -37,9 +37,8 @@ void loop() {
       XBee.println(input);
       lightSetting = input;
     }
-    // Not implementing error checking right now due to extraneous serial entries
     /*
-    if (input != '0' && input != '1' && input != '2') {
+    else if (input != '0' && input != '1' && input != '2') {
       XBee.println("Unrecognized Character");
     }
     */
