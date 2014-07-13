@@ -1,4 +1,4 @@
-Baud Rate: 115200
+Baud Rate: 9600	// Using 9600 instead of 115200 for now until garbled text issue worked out
 PAN ID: 4814
 Channel: C
 
