@@ -1,4 +1,4 @@
-Baud Rate: 9600	// Using 9600 instead of 115200 for now until garbled text issue worked out
+Baud Rate: 115200 
 PAN ID: 4814
 Channel: C
 
@@ -6,12 +6,12 @@ Receiving End
 MY: 0x8563
 SH: 13A200
 SL: 40B2EF3C
-DH: 0
-DL: 0x9617
+DH: 13A200
+DL: 40A79BAC
 
 Sending End
 MY: 0x9617
 SH: 13A200
 SL: 40A79BAC
-DH: 0
-DL: 0x8563
+DH: 13A200
+DL: 40B2EF3C
