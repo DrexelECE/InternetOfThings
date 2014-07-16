@@ -3,17 +3,18 @@ Assignment 1-3
 Establishes 2 LED blink patterns and allows the user to
 select the pattern via serial communication over 802.15.4
 James Kurtz and Greg Yeutter */
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 
-SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
+//SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 int led = 13;  // LED Pin 
 char input = '0';
 char lightSetting = input;
 
 void setup() {
   pinMode(led, OUTPUT);  // initialize the digital pin as an output.
-  XBee.begin(115200);  // 115200 causes garbled text, switch to 9600 if desired
-  XBee.println("Enter the blink sequence number, 1 or 2. To turn off, enter 0.");
+  Serial.begin(9600);  // 115200 causes garbled text, switch to 9600 if desired
+  delay(100);
+  Serial.println("Enter the blink sequence number, 1 or 2. To turn off, enter 0.");
 }
 
 void blink1() {
@@ -31,15 +32,16 @@ void blink2() {
 }
 
 void loop() {
-  if (XBee.available() > 0) {
-    input = XBee.read();
+  // Serial.println(input);
+  if (Serial.available() > 0) {
+    input = Serial.read();
     if (input == '0' || input == '1' || input == '2') {
-      XBee.println(input);
+      Serial.println(input);
       lightSetting = input;
     }
     /*
     else if (input != '0' && input != '1' && input != '2') {
-      XBee.println("Unrecognized Character");
+      Serial.println("Unrecognized Character");
     }
     */
   }
