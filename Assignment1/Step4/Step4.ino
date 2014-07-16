@@ -14,7 +14,7 @@ James Kurtz and Greg Yeutter */
 Adafruit_NFCShield_I2C nfc(IRQ, RESET);
 
 int led = 13;  // LED Pin 
-char input = '0';
+char input = '2';
 char doorState = 0; // 0: locked, 1: unlocked
 
 void setup() {
@@ -37,6 +37,9 @@ void setup() {
   nfc.SAMConfig();   // configure board to read RFID tags
   
   Serial.println("Init complete.");
+  
+  // Check for authorized users
+  Serial.println("Waiting for card...");
 }
 
 void lockBlink() {
@@ -69,37 +72,40 @@ void changeLockState() {
     input = Serial.read();
     if (input == '1') {
       doorState = '0';
-      Serial.println("Door locked. Goodbye.");
+      Serial.println("\nDoor locked. Goodbye.");
       lockBlink();
+      input = '2';
     } else {
-      Serial.println("Door remaining unlocked. Goodbye.");
+      Serial.println("\nDoor remaining unlocked. Goodbye.");
       unlockBlink();
+      input = '2';
+    }
   } else {
     Serial.print(" The door is locked. Unlock it? 1 for Yes, 0 for No");
     if (input == '1') {
-      doorState = '0';
-      Serial.println("Door unlocked. Goodbye.");
+      doorState = '1';
+      Serial.println("\nDoor unlocked. Goodbye.");
       unlockBlink();
+      input = '2';
     } else {
-      Serial.println("Door remaining locked. Goodbye.");
+      Serial.println("\nDoor remaining locked. Goodbye.");
       lockBlink();
+      input = '2';
+    }
   }
 }
 
 void checkLockState() {
   if (doorState == '1') {
-    Serial.print(" The door is unlocked. Goodbye.");
+    Serial.print(" The door is unlocked. Goodbye.\n");
     unlockBlink();
   } else {
-    Serial.print(" The door is locked. Goodbye.");
+    Serial.print(" The door is locked. Goodbye.\n");
     lockBlink();
   }
 }
 
 void loop() {
-  // Check for authorized users
-  Serial.println("Waiting for card...");
-  
   //NFC vars:
   uint8_t success;
   uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
@@ -107,7 +113,7 @@ void loop() {
   
   uint8_t card1[] = { 61, 137, 141, 154};
   uint8_t card2[] = { 180, 96, 190, 85};
-  
+  /*
   if (Serial.available() > 0) {
     input = Serial.read();
     Serial.println(input);
@@ -115,6 +121,7 @@ void loop() {
       Serial.println("Unrecognized Character");
     }
   }
+  */
   
   // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
   // 'uid' will be populated with the UID, and uidLength will indicate
@@ -125,7 +132,7 @@ void loop() {
   //DEBUG blinks  Serial.println((String)ledState + "\t" + (String) input + "\t" + (String) millis());
   
   if (success) {
-    Serial.println("  Found a card...");
+    Serial.println("Found a card.");
     //Serial.println("Found an ISO14443A card");
     //Serial.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
     //Serial.println("  UID Value: ");
@@ -162,17 +169,20 @@ void loop() {
     }
     
     if (match1) {
-      Serial.println("Hello Greg.");
+      Serial.print("\nHello Greg.");
       changeLockState();
     } else if (match2) {
-      Serial.println("Hello James.");
+      Serial.print("\nHello James.");
       changeLockState();
     } else {
-      Serial.println("Access Denied.");
+      Serial.print("\nAccess Denied.");
       checkLockState();
     }
     
     delay(1000);
+    
+    // Check for authorized users
+    Serial.println("\nWaiting for card...");
     
   }
   
