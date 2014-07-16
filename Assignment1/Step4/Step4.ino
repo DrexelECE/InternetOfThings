@@ -16,8 +16,6 @@ Adafruit_NFCShield_I2C nfc(IRQ, RESET);
 int led = 13;  // LED Pin 
 char input = '2';
 char doorState = '0'; // 0: locked, 1: unlocked
-char lockSetting = '2'; 
-int nfcSerialState = 0; // 0: listening for nfc, 1: listening for serial
 
 void setup() {
   // Initialize pins and serial port
@@ -49,7 +47,11 @@ void lockBlink() {
   delay(800);
   digitalWrite(led, LOW);
   delay(400);
-    digitalWrite(led, HIGH);
+  digitalWrite(led, HIGH);
+  delay(800);
+  digitalWrite(led, LOW);
+  delay(400);
+  digitalWrite(led, HIGH);
   delay(800);
   digitalWrite(led, LOW);
 }
@@ -66,41 +68,54 @@ void unlockBlink() {
   digitalWrite(led, HIGH);
   delay(100);
   digitalWrite(led, LOW);
+  delay(100);
+  digitalWrite(led, HIGH);
+  delay(100);
+  digitalWrite(led, LOW);
+  delay(100);
+  digitalWrite(led, HIGH);
+  delay(100);
+  digitalWrite(led, LOW);
 }
 
 void changeLockState() {
-  nfcSerialState = 1;
-  loop();
   if (doorState == '1') {
     Serial.print(" The door is unlocked. Lock it? 1 for Yes, 0 for No");
   } else {
     Serial.print(" The door is locked. Unlock it? 1 for Yes, 0 for No");
   }
+  
+  delay(300);
+  
   do {
-    getSerialInput();    
-  } while (lockSetting != '1' || lockSetting != '0');
+    getSerialInput();
+    if (input == '1' || input == '0') {
+      break;
+    } 
+  } while (input == '2');
+  
   if (doorState == '1') {
-    if (lockSetting == '1') {
+    if (input == '1') {
       doorState = '0';
       Serial.println("\nDoor locked. Goodbye.");
       lockBlink();
-    } else if (lockSetting == '0') {
+    } else if (input == '0') {
       Serial.println("\nDoor remaining unlocked. Goodbye.");
       unlockBlink();
     }
   } else {
-    if (lockSetting == '1') {
+    if (input == '1') {
       doorState = '1';
       Serial.println("\nDoor unlocked. Goodbye.");
       unlockBlink();
-    } else if (lockSetting == '0') {
+    } else if (input == '0') {
       Serial.println("\nDoor remaining locked. Goodbye.");
       lockBlink();
     }
   } 
+  
   input = '2';
-  lockSetting = '2';
-  nfcSerialState = 0;
+  
 }
 
 void checkLockState() {
@@ -116,10 +131,7 @@ void checkLockState() {
 void getSerialInput() {
   if (Serial.available() > 0) {
       input = Serial.read();
-      if (input == '0' || input == '1') {
-        Serial.println(input);
-        lockSetting = input;
-      }
+      Serial.println(input);
   }
 }
 
@@ -196,10 +208,5 @@ void getNfcInput() {
 }
 
 void loop() {
-  if (nfcSerialState == 0) {
-    getNfcInput(); // Check for NFC Input
-  } else {
-    getSerialInput(); // Check for serial input
-  }
-  
+  getNfcInput(); // Check for NFC Input  
 }
