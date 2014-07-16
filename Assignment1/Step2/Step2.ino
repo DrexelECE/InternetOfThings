@@ -1,7 +1,7 @@
 /* ECEC 490 - Internet of Things - Summer 2014
- * Assignment 1-1
+ * Assignment 1-2
  * Establishes 2 LED blink patterns and allows the user to
- * select the pattern via serial communication
+ * select the pattern via authenticated NFC cards
  * James Kurtz and Greg Yeutter */
 
 
@@ -45,6 +45,7 @@ void setup() {
   nfc.SAMConfig();   // configure board to read RFID tags
   
   Serial.println("Init complete.");
+  Serial.println("Waiting for card...");
 }
 
 /* the blinking function */
@@ -143,6 +144,7 @@ void loop() {
     
     delay(1000);
     
+    Serial.println("Waiting for card...");
   }
   
   if (input == '1') {
