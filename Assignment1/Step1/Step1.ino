@@ -6,6 +6,7 @@ James Kurtz and Greg Yeutter */
 
 int led = 13;  // LED Pin 
 char input = '0';
+char ledSetting = '0';
 
 void setup() {
   pinMode(led, OUTPUT);  // initialize the digital pin as an output.
@@ -27,19 +28,36 @@ void blink2() {
   delay(100);
 }
 
-void loop() {
+void getSerialInput() {
   if (Serial.available() > 0) {
     input = Serial.read();
     Serial.println(input);
-    if (input != '0' && input != '1' && input != '2') {
-      Serial.println("Unrecognized Character");
-    }
+    checkInput();
   }
-  else if (input == '1') {
+}
+
+void checkInput() {
+  if (input == '1') {
+    ledSetting = '1';
+  } else if (input == '2') {
+    ledSetting = '2';
+  } else if (input == '0') {
+    ledSetting = '0';
+  } 
+}
+
+void runBlinkSequence() {
+  if (ledSetting == '1') {
     blink1();
-  }
-  else if (input == '2') {
+  } else if (ledSetting == '2') {
     blink2();
+  } else if (ledSetting == '0') {
+    digitalWrite(led, LOW);
+    delay(500);
   }
- 
+}
+
+void loop() {
+  getSerialInput();
+  runBlinkSequence();
 }
