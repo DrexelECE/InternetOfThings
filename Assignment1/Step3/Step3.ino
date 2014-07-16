@@ -3,7 +3,6 @@ Assignment 1-3
 Establishes 2 LED blink patterns and allows the user to
 select the pattern via serial communication over 802.15.4
 James Kurtz and Greg Yeutter */
-//#include <SoftwareSerial.h>
 
 int led = 13;  // LED Pin 
 char input = '0';
