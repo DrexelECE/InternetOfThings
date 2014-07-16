@@ -1,4 +1,4 @@
-Baud Rate: 115200 
+Baud Rate: 9600
 PAN ID: 4814
 Channel: C
 
