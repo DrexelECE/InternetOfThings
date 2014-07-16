@@ -92,7 +92,10 @@ void changeLockState() {
     if (input == '1' || input == '0') {
       break;
     } 
-  } while (input == '2');
+  } while (input != '1' || input != '0');
+  
+  Serial.print("\nInput: ");
+  Serial.print(input);
   
   if (doorState == '1') {
     if (input == '1') {
@@ -131,8 +134,7 @@ void checkLockState() {
 void getSerialInput() {
   if (Serial.available() > 0) {
       input = Serial.read();
-      Serial.println(input);
-  }
+  } 
 }
 
 void getNfcInput() {
