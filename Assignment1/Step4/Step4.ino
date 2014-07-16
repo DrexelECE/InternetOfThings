@@ -92,7 +92,7 @@ void changeLockState() {
     if (input == '1' || input == '0') {
       break;
     } 
-  } while (input != '1' || input != '0');
+  } while (1);
   
   Serial.print("\nInput: ");
   Serial.print(input);
