@@ -15,7 +15,8 @@ Adafruit_NFCShield_I2C nfc(IRQ, RESET);
 
 int led = 13;  // LED Pin 
 char input = '2';
-char doorState = 0; // 0: locked, 1: unlocked
+char doorState = '0'; // 0: locked, 1: unlocked
+char lockSetting = '2';
 
 void setup() {
   // Initialize pins and serial port
@@ -69,30 +70,29 @@ void unlockBlink() {
 void changeLockState() {
   if (doorState == '1') {
     Serial.print(" The door is unlocked. Lock it? 1 for Yes, 0 for No");
-    input = Serial.read();
-    if (input == '1') {
+    getSerialInput();
+    if (lockSetting == '1') {
       doorState = '0';
       Serial.println("\nDoor locked. Goodbye.");
       lockBlink();
-      input = '2';
-    } else {
+    } else if (lockSetting == '0') {
       Serial.println("\nDoor remaining unlocked. Goodbye.");
       unlockBlink();
-      input = '2';
     }
   } else {
     Serial.print(" The door is locked. Unlock it? 1 for Yes, 0 for No");
-    if (input == '1') {
+    getSerialInput();
+    if (lockSetting == '1') {
       doorState = '1';
       Serial.println("\nDoor unlocked. Goodbye.");
       unlockBlink();
-      input = '2';
-    } else {
+    } else if (lockSetting == '0') {
       Serial.println("\nDoor remaining locked. Goodbye.");
       lockBlink();
-      input = '2';
     }
-  }
+  } 
+  input = '2';
+  lockSetting = '2';
 }
 
 void checkLockState() {
@@ -102,6 +102,16 @@ void checkLockState() {
   } else {
     Serial.print(" The door is locked. Goodbye.\n");
     lockBlink();
+  }
+}
+
+void getSerialInput() {
+  if (Serial.available() > 0) {
+    input = Serial.read();
+    if (input == '0' || input == '1') {
+      Serial.println(input);
+      lockSetting = input;
+    }
   }
 }
 
