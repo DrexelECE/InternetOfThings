@@ -5,14 +5,13 @@ select the pattern via serial communication over 802.15.4
 James Kurtz and Greg Yeutter */
 //#include <SoftwareSerial.h>
 
-//SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 int led = 13;  // LED Pin 
 char input = '0';
 char lightSetting = input;
 
 void setup() {
   pinMode(led, OUTPUT);  // initialize the digital pin as an output.
-  Serial.begin(9600);  // 115200 causes garbled text, switch to 9600 if desired
+  Serial.begin(9600);  // 115200 causes garbled text, switch to 9600
   delay(100);
   Serial.println("Enter the blink sequence number, 1 or 2. To turn off, enter 0.");
 }
@@ -32,13 +31,13 @@ void blink2() {
 }
 
 void loop() {
-  // Serial.println(input);
   if (Serial.available() > 0) {
     input = Serial.read();
     if (input == '0' || input == '1' || input == '2') {
       Serial.println(input);
       lightSetting = input;
     }
+    // error checking is currently off
     /*
     else if (input != '0' && input != '1' && input != '2') {
       Serial.println("Unrecognized Character");
