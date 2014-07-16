@@ -16,7 +16,8 @@ Adafruit_NFCShield_I2C nfc(IRQ, RESET);
 int led = 13;  // LED Pin 
 char input = '2';
 char doorState = '0'; // 0: locked, 1: unlocked
-char lockSetting = '2';
+char lockSetting = '2'; 
+int nfcSerialState = 0; // 0: listening for nfc, 1: listening for serial
 
 void setup() {
   // Initialize pins and serial port
@@ -68,9 +69,17 @@ void unlockBlink() {
 }
 
 void changeLockState() {
+  nfcSerialState = 1;
+  loop();
   if (doorState == '1') {
     Serial.print(" The door is unlocked. Lock it? 1 for Yes, 0 for No");
-    getSerialInput();
+  } else {
+    Serial.print(" The door is locked. Unlock it? 1 for Yes, 0 for No");
+  }
+  do {
+    getSerialInput();    
+  } while (lockSetting != '1' || lockSetting != '0');
+  if (doorState == '1') {
     if (lockSetting == '1') {
       doorState = '0';
       Serial.println("\nDoor locked. Goodbye.");
@@ -80,8 +89,6 @@ void changeLockState() {
       unlockBlink();
     }
   } else {
-    Serial.print(" The door is locked. Unlock it? 1 for Yes, 0 for No");
-    getSerialInput();
     if (lockSetting == '1') {
       doorState = '1';
       Serial.println("\nDoor unlocked. Goodbye.");
@@ -93,6 +100,7 @@ void changeLockState() {
   } 
   input = '2';
   lockSetting = '2';
+  nfcSerialState = 0;
 }
 
 void checkLockState() {
@@ -107,15 +115,15 @@ void checkLockState() {
 
 void getSerialInput() {
   if (Serial.available() > 0) {
-    input = Serial.read();
-    if (input == '0' || input == '1') {
-      Serial.println(input);
-      lockSetting = input;
-    }
+      input = Serial.read();
+      if (input == '0' || input == '1') {
+        Serial.println(input);
+        lockSetting = input;
+      }
   }
 }
 
-void loop() {
+void getNfcInput() {
   //NFC vars:
   uint8_t success;
   uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
@@ -123,15 +131,6 @@ void loop() {
   
   uint8_t card1[] = { 61, 137, 141, 154};
   uint8_t card2[] = { 180, 96, 190, 85};
-  /*
-  if (Serial.available() > 0) {
-    input = Serial.read();
-    Serial.println(input);
-    if (input != '0' && input != '1' && input != '2') {
-      Serial.println("Unrecognized Character");
-    }
-  }
-  */
   
   // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
   // 'uid' will be populated with the UID, and uidLength will indicate
@@ -193,38 +192,14 @@ void loop() {
     
     // Check for authorized users
     Serial.println("\nWaiting for card...");
-    
+}
+}
+
+void loop() {
+  if (nfcSerialState == 0) {
+    getNfcInput(); // Check for NFC Input
+  } else {
+    getSerialInput(); // Check for serial input
   }
   
-  /*
-  if (input == '1') {
-    blink(100);
-  }else if (input == '2') {
-    blink(500);
-  }
-  */
- 
-  /*
-  if (Serial.available() > 0) {
-    input = Serial.read();
-    if (input == '0' || input == '1' || input == '2') {
-      Serial.println(input);
-      lightSetting = input;
-    }
-    */
-    /*
-    else if (input != '0' && input != '1' && input != '2') {
-      Serial.println("Unrecognized Character");
-    }
-    */
-  /*  
-  }
-  if (lightSetting == '1') {
-    blink1();
-  }
-  else if (lightSetting == '2') {
-    blink2();
-  }
-  */
- 
 }
