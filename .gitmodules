@@ -4,3 +4,6 @@
 [submodule "Assignment1/Step2/libraries/NfcShield"]
 	path = Assignment1/Step2/libraries/NfcShield
 	url = https://github.com/adafruit/Adafruit_NFCShield_I2C.git
+[submodule "Assignment2/1-BLE/libs/BLEShield"]
+	path = Assignment2/1-BLE/libs/BLEShield
+	url = https://github.com/RedBearLab/BLEShield.git
