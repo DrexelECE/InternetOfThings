@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
     	// Wheel circumference in mm
     	double wheelCircumference = 0;
     	
-    	// 700c rims same width as 29er
+    	// 700c rims same diameter as 29er
     	if (rimSize == 29) {
     		rimSize = 700;
     	}
